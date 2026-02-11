@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.securetask.dto.requests.AuthRequest;
 import com.securetask.dto.responses.AuthResponse;
-import com.securetask.service.Auth.AuthService;
+import com.securetask.service.auth.AuthService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
