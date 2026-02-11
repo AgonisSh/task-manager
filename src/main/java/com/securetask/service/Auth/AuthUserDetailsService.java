@@ -1,4 +1,4 @@
-package com.securetask.service;
+package com.securetask.service.Auth;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

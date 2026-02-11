@@ -1,4 +1,4 @@
-package com.securetask.service;
+package com.securetask.service.Auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
