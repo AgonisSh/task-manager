@@ -1,0 +1,35 @@
+spring:
+    application:
+        name: secure-task-manager
+
+    # Use H2 in-memory database for development, switch to PostgreSQL after
+    datasource:
+        url: jdbc:h2:mem:taskdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+        driver-class-name: org.h2.Driver
+        username: sa
+        password:
+
+    jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        hibernate:
+            ddl-auto: create-drop
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+
+    h2:
+        console:
+            enabled: true
+            path: /h2-console
+    
+    server:
+        port: 8080
+
+    # Open API configuration
+    springdoc:
+        api-docs:
+            path: /api-docs
+        swagger-ui: 
+            path: /swagger-ui.html
+            operationsSorter: method
