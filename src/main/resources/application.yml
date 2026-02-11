@@ -1,5 +1,8 @@
 debug: true
 
+jwt:
+  secret: 3z8TnaR1y9vjAPBzU0Fut927bQgoJdaMFnsBcWFV1Ck=
+
 spring:
 
     application:
