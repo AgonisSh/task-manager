@@ -1,4 +1,4 @@
-package com.securetask.service.auth;
+package com.securetask.Service.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -16,7 +16,8 @@ public class JwtTokenService {
     private final JwtEncoder encoder;
     private final JwtDecoder decoder;
 
-    public String generateToken(Authentication authentication) {
+    public String generateToken(Authentication authentication) 
+    {
         Instant now = Instant.now();
         String scope = "ROLE_USER";
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -30,7 +31,8 @@ public class JwtTokenService {
         return this.encoder.encode(encoderParameters).getTokenValue();
     }
 
-    public Long extractExpirationTime(String token) {
+    public Long extractExpirationTime(String token) 
+    {
         Jwt jwt = decoder.decode(token);
         var exp = (Instant) jwt.getClaim("exp");
         return exp.toEpochMilli();

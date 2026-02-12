@@ -1,4 +1,4 @@
-package com.securetask.dto.requests;
+package com.securetask.DTO.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

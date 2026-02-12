@@ -1,4 +1,4 @@
-package com.securetask.dto.responses;
+package com.securetask.DTO.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

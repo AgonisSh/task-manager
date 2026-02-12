@@ -1,9 +1,10 @@
-package com.securetask.repository;
+package com.securetask.Repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.securetask.entity.User;
+
+import com.securetask.Entity.User;
 
 
 public interface UserRepository extends JpaRepository<User, Long> {
