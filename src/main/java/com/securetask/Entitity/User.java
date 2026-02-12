@@ -1,4 +1,4 @@
-package com.securetask.Entity;
+package com.securetask.Entitity;
 
 import java.time.LocalDateTime;
 

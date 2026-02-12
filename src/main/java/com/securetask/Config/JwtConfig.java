@@ -1,4 +1,4 @@
-package com.securetask.config;
+package com.securetask.Config;
 
 import javax.crypto.spec.SecretKeySpec;
 

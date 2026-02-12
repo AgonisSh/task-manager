@@ -10,7 +10,6 @@ import com.securetask.DTO.requests.AuthRequest;
 import com.securetask.DTO.responses.AuthResponse;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -29,8 +28,4 @@ public class AuthService {
 
         return new AuthResponse(jwtToken, authentication.getName(), expiresAt);
     }
-
-    // Create a register method that takes in an AuthRegisterRequest and retur
-
-    
 }

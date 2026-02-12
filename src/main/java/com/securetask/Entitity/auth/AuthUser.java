@@ -1,4 +1,4 @@
-package com.securetask.Entity.auth;
+package com.securetask.Entitity.auth;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.securetask.Entity.User;
+import com.securetask.Entitity.User;
 
 import lombok.RequiredArgsConstructor;
 
