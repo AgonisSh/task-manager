@@ -3,29 +3,17 @@ package com.securetask.Service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.securetask.DTO.requests.RegisterRequest;
-import com.securetask.DTO.responses.UserResponse;
+import com.securetask.DAO.UserDAO;
+import com.securetask.Mapper.UserMapper;
+import com.securetask.Service.UserService;
+import com.securetask.Validator.UserValidator;
 
 @Service
-public class UserServiceImpl {
+public class UserServiceImpl implements UserService {
     
 
-    @Autowired
-    private UserDAO userDAO;
-
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private UserValidator userValidator;
 
 
-    @Override
-    public UserResponse register(RegisterRequest userRequest) 
-    {
-        userValidator.validateRegisterRequest(userRequest);
-        return userMapper.toUserResponse(userDAO.save(userMapper.toEntity(userRequest))));
-    }
 
     /** 
      * Exemple of code : 
