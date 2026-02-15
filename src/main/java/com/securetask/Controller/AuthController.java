@@ -9,6 +9,7 @@ import com.securetask.DTO.responses.AuthResponse;
 import com.securetask.DTO.responses.UserResponse;
 import com.securetask.Service.auth.AuthService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> registerUser(@RequestBody RegisterRequest userRequest) 
+    public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody RegisterRequest userRequest) 
     {
         return new ResponseEntity<>(authService.register(userRequest), HttpStatus.CREATED);
     }
