@@ -8,15 +8,9 @@ import com.securetask.DTO.requests.RefreshTokenRequest;
 import com.securetask.DTO.requests.RegisterRequest;
 import com.securetask.DTO.responses.AuthResponse;
 import com.securetask.DTO.responses.UserResponse;
-import com.securetask.Entitity.auth.AuthUser;
-import com.securetask.Entitity.auth.RefreshToken;
 import com.securetask.Service.auth.AuthService;
-import com.securetask.Service.auth.JwtTokenService;
-import com.securetask.Service.auth.RefreshTokenService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
