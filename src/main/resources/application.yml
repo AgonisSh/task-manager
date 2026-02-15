@@ -2,6 +2,10 @@ debug: true
 
 jwt:
   secret: 3z8TnaR1y9vjAPBzU0Fut927bQgoJdaMFnsBcWFV1Ck=
+  expiration : 3600000 # 1 hour in milliseconds
+  refresh-token:
+    expiration: 604800000 # 7 days in milliseconds
+    
 
 spring:
 
