@@ -1,6 +1,8 @@
 package com.securetask.Service.auth;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
@@ -13,6 +15,9 @@ import java.time.temporal.ChronoUnit;
 @RequiredArgsConstructor
 public class JwtTokenService {
 
+    @Value("${spring.application.name}")
+    private String issuer;
+
     private final JwtEncoder encoder;
     private final JwtDecoder decoder;
 
@@ -21,7 +26,7 @@ public class JwtTokenService {
         Instant now = Instant.now();
         String scope = "ROLE_USER";
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("self")
+                .issuer(this.issuer)
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getName())
