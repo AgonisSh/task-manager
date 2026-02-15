@@ -45,6 +45,31 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleRefreshTokenExpiredException(RefreshTokenExpiredException ex, HttpServletRequest request) 
+    {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now().toString(),
+                401,
+                "Unauthorized",
+                ex.getMessage(),
+                request.getRequestURI());
+        
+        return ResponseEntity.status(401).body(error);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) 
+    {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now().toString(),
+                404,
+                "Not Found",
+                ex.getMessage(),
+                request.getRequestURI());
+
+        return ResponseEntity.status(404).body(error);
+    }
 
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateResource(DuplicateResourceException ex, HttpServletRequest request) 
