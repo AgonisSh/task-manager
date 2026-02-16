@@ -1,4 +1,4 @@
-package com.securetask.secure_task_manager;
+package com.securetask;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
