@@ -45,6 +45,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now().toString(),
+                401,
+                "Unauthorized",
+                ex.getMessage(),
+                request.getRequestURI());
+
+        return ResponseEntity.status(401).body(error);
+    }
+
     @ExceptionHandler(RefreshTokenExpiredException.class)
     public ResponseEntity<ErrorResponse> handleRefreshTokenExpiredException(RefreshTokenExpiredException ex, HttpServletRequest request) 
     {
