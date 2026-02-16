@@ -6,8 +6,12 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties.Http;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,6 +26,44 @@ public class GlobalExceptionHandler {
 
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex, HttpServletRequest request) 
+    {
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now().toString(),
+            HttpStatus.UNAUTHORIZED.value(),
+            "Unauthorized",
+            "Invalid email or password",
+            request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+    
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UsernameNotFoundException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now().toString(),
+            HttpStatus.UNAUTHORIZED.value(),
+            "Unauthorized",
+            "Invalid email or password",
+            request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+    
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ErrorResponse> handleDisabled(DisabledException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now().toString(),
+            HttpStatus.FORBIDDEN.value(),
+            "Forbidden",
+            "Account disabled",
+            request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex, HttpServletRequest request) 
@@ -49,12 +91,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request) {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(),
-                401,
+                HttpStatus.UNAUTHORIZED.value(),
                 "Unauthorized",
                 ex.getMessage(),
                 request.getRequestURI());
 
-        return ResponseEntity.status(401).body(error);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(RefreshTokenExpiredException.class)
@@ -62,12 +104,12 @@ public class GlobalExceptionHandler {
     {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(),
-                401,
+                HttpStatus.UNAUTHORIZED.value(),
                 "Unauthorized",
                 ex.getMessage(),
                 request.getRequestURI());
         
-        return ResponseEntity.status(401).body(error);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -75,12 +117,12 @@ public class GlobalExceptionHandler {
     {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(),
-                404,
+                HttpStatus.NOT_FOUND.value(),
                 "Not Found",
                 ex.getMessage(),
                 request.getRequestURI());
 
-        return ResponseEntity.status(404).body(error);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
