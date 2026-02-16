@@ -45,18 +45,24 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
     
-    public RefreshToken verifyExpiration(RefreshToken token) 
+    public RefreshToken verifyExpiration(RefreshToken refreshToken) 
     {
-        if (token.getExpiryDate().isBefore(Instant.now())) {
-            refreshTokenRepository.delete(token);
+        if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
+            refreshTokenRepository.delete(refreshToken);
             throw new RefreshTokenExpiredException("Refresh token expired. Please login again");
         }
-        return token;
+        return refreshToken;
     }
     
-    public Optional<RefreshToken> findByToken(String token) 
+    public Optional<RefreshToken> findByToken(String refreshToken) 
     {
-        return refreshTokenRepository.findByToken(token);
+        return refreshTokenRepository.findByToken(refreshToken);
+    }
+
+
+    public void deleteByToken(String refreshToken) 
+    {
+        refreshTokenRepository.deleteByToken(refreshToken);
     }
 }
 

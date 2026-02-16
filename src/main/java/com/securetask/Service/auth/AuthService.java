@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.securetask.DAO.UserDAO;
 import com.securetask.DTO.requests.AuthRequest;
+import com.securetask.DTO.requests.LogoutRequest;
 import com.securetask.DTO.requests.RefreshTokenRequest;
 import com.securetask.DTO.requests.RegisterRequest;
 import com.securetask.DTO.responses.AuthResponse;
@@ -20,6 +21,8 @@ import com.securetask.Entitity.auth.RefreshToken;
 import com.securetask.Factory.UserFactory;
 import com.securetask.Mapper.UserMapper;
 import com.securetask.Validator.UserValidator;
+
+import jakarta.transaction.Transactional;
 
 
 @Service
@@ -45,6 +48,12 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.getEmail());
 
         return new AuthResponse(jwtToken, refreshToken.getToken(), authentication.getName(), expiresAt);
+    }
+
+    @Transactional
+    public void logout(LogoutRequest request) 
+    {
+        refreshTokenService.deleteByToken(request.getToken());
     }
 
 

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.securetask.DTO.requests.AuthRequest;
+import com.securetask.DTO.requests.LogoutRequest;
 import com.securetask.DTO.requests.RefreshTokenRequest;
 import com.securetask.DTO.requests.RegisterRequest;
 import com.securetask.DTO.responses.AuthResponse;
@@ -28,6 +29,12 @@ public class AuthController {
     public AuthResponse login(@RequestBody AuthRequest authRequest) 
     {
         return authService.authenticate(authRequest);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@Valid @RequestBody LogoutRequest request) {
+        authService.logout(request);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/register")
