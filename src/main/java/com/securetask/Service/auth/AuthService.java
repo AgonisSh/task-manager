@@ -2,11 +2,10 @@ package com.securetask.Service.auth;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.securetask.DAO.UserDAO;
@@ -15,11 +14,10 @@ import com.securetask.DTO.requests.LogoutRequest;
 import com.securetask.DTO.requests.RefreshTokenRequest;
 import com.securetask.DTO.requests.RegisterRequest;
 import com.securetask.DTO.responses.AuthResponse;
-import com.securetask.DTO.responses.UserResponse;
 import com.securetask.Entitity.User;
 import com.securetask.Entitity.auth.RefreshToken;
+import com.securetask.Exception.InvalidTokenException;
 import com.securetask.Factory.UserFactory;
-import com.securetask.Mapper.UserMapper;
 import com.securetask.Validator.UserValidator;
 
 import jakarta.transaction.Transactional;
@@ -32,9 +30,9 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
     private final RefreshTokenService refreshTokenService;
+    private final AuthUserDetailsService userDetailsService;
     private final UserDAO userDAO;
     private final UserValidator userValidator;
-    private final UserMapper userMapper;
     private final UserFactory userFactory;
 
 
@@ -50,41 +48,56 @@ public class AuthService {
         return new AuthResponse(jwtToken, refreshToken.getToken(), authentication.getName(), expiresAt);
     }
 
+    // Register new user with default role USER, and return JWT + refresh token
     @Transactional
-    public void logout(LogoutRequest request) 
-    {
-        refreshTokenService.deleteByToken(request.getToken());
-    }
-
-
-    public UserResponse register(RegisterRequest userRequest) 
+    public AuthResponse register(RegisterRequest userRequest) 
     {
         userValidator.validateUniqueFields(userRequest);
         User user = userFactory.createUser(userRequest, User.Role.USER);
+        userDAO.save(user);
 
-        return userMapper.toRegisterResponse(userDAO.save(user));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+
+        String jwtToken = jwtTokenService.generateToken(new UsernamePasswordAuthenticationToken(
+            userDetails, null, userDetails.getAuthorities())
+        );
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getEmail());
+        Long expiresAt = jwtTokenService.extractExpirationTime(jwtToken);
+
+        return new AuthResponse(jwtToken, refreshToken.getToken(), user.getUsername(), expiresAt);
     }
 
 
     public AuthResponse refresh(RefreshTokenRequest request) 
     {
-        RefreshToken refreshToken = refreshTokenService.findByToken(request.getToken())
-            .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+        RefreshToken oldRefreshToken = refreshTokenService.findByToken(request.getToken())
+            .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
         
-        refreshTokenService.verifyExpiration(refreshToken);
+        refreshTokenService.verifyExpiration(oldRefreshToken);
+        User user = oldRefreshToken.getUser();
 
-        User user = refreshToken.getUser();
+        // Rotate refresh token: delete old and create new
+        refreshTokenService.deleteByToken(request.getToken());
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user.getEmail());
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-            user.getEmail(), 
-            null, 
-            List.of(() -> "ROLE_" + user.getRole().name())
-        );
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
     
-        // Regenerate JWT token
-        String jwtToken = jwtTokenService.generateToken(authenticationToken);
+        // Generate new JWT token with same user details and authorities
+        String jwtToken = jwtTokenService.generateToken(new UsernamePasswordAuthenticationToken(
+            userDetails, null, userDetails.getAuthorities())
+        );
+
         Long expiresAt = jwtTokenService.extractExpirationTime(jwtToken);
 
-        return new AuthResponse(jwtToken, request.getToken(), refreshToken.getUser().getEmail(), expiresAt);
+        return new AuthResponse(jwtToken, newRefreshToken.getToken(), user.getUsername(), expiresAt);
+    }
+
+
+    @Transactional
+    public void logout(LogoutRequest request) 
+    {
+        refreshTokenService.deleteByToken(request.getToken());
     }
 }
+
