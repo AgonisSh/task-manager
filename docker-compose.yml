@@ -1,0 +1,48 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        ports:
+            - "8080:8080"
+        volumes:
+            # Mount source code for hot reload
+            - ./backend/src:/app/src
+            - ./backend/pom.xml:/app/pom.xml
+            # Cache Maven dependencies
+            - maven-cache:/root/.m2
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/securetask
+            - SPRING_DATASOURCE_USERNAME=postgres
+            - SPRING_DATASOURCE_PASSWORD=postgres
+            - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+            - SPRING_PROFILES_ACTIVE=dev
+        depends_on:
+            - postgres
+        restart: unless-stopped
+
+    postgres:
+        image: postgres:15-alpine
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_DB=securetask
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+
+    
+    adminer:
+        image: adminer:latest
+        ports:
+        - "8081:8080"
+        depends_on:
+        - postgres
+
+
+volumes:
+    maven-cache:
+    postgres-data:
+    
+   
