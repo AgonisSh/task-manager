@@ -1,0 +1,20 @@
+jwt:
+    secret: ${JWT_SECRET:ci-test-secret-32-chars-long}
+    expiration: 3000  # 3 Seconds for testing
+    refresh-token:
+        expiration: 2000  # 2 Seconds for testing
+
+spring:
+    datasource:
+        url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+        driver-class-name: org.h2.Driver
+    jpa:
+        hibernate:
+            ddl-auto: create-drop
+            show-sql: true
+        defer-datasource-initialization: true
+    sql:
+        init:
+            mode: never 
+    flyway:
+        enabled: false
