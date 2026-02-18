@@ -34,11 +34,3 @@ jobs:
         with:
           name: test-results
           path: backend/target/surefire-reports/
-
-      - name: Generate test report
-        if: always()
-        uses: dorny/test-reporter@v1
-        with:
-          name: Maven Tests
-          path: backend/target/surefire-reports/*.xml
-          reporter: java-junit
