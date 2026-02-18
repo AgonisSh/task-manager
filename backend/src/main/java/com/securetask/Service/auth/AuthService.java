@@ -2,6 +2,8 @@ package com.securetask.Service.auth;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Objects;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -54,7 +56,7 @@ public class AuthService {
     {
         userValidator.validateUniqueFields(userRequest);
         User user = userFactory.createUser(userRequest, User.Role.USER);
-        userDAO.save(user);
+        userDAO.save(Objects.requireNonNull(user));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
 
