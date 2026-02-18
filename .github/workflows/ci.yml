@@ -10,21 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: securetask_ci
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,15 +21,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run Flyway migrations
-        run: |
-          cd backend
-          mvn flyway:migrate -Dflyway.url=jdbc:postgresql://localhost:5432/securetask_ci -Dflyway.user=postgres -Dflyway.password=postgres
-        continue-on-error: true
-
-      - name: Build with Maven
+      - name: Run tests with H2 database
         env:
-          JWT_SECRET: ${{ secrets.JWT_SECRET }} # Stored in GitHub Secrets
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           cd backend
           mvn clean verify -Dspring.profiles.active=ci
