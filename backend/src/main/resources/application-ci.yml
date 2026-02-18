@@ -1,0 +1,16 @@
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5432/securetask
+        username: postgres
+        password: postgres
+    flyway:
+        enabled: true
+
+jwt:
+    secret: ${JWT_SECRET:placeholder-secret-for-ci-only}  # Env var or default
+    expiration: 3000  # 3 Seconds for testing
+    refresh-token:
+        expiration: 2000  # 2 Seconds for testing
+
+server:
+    port: 8080
