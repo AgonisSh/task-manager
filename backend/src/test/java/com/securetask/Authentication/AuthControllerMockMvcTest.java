@@ -8,11 +8,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.securetask.DTO.requests.AuthRequest;
+import com.securetask.DTO.requests.RefreshTokenRequest;
 import com.securetask.DTO.requests.RegisterRequest;
-
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -221,6 +222,92 @@ public class AuthControllerMockMvcTest {
             )
                 .andExpect(status().isUnauthorized());
     }
+
+
+    @Test
+    void shouldFailToAccessProtectedEndpointWithoutToken() throws Exception 
+    {
+        mockMvc.perform(get("/api/v1/users"))
+                .andExpect(status().isUnauthorized());  
+    }
+
+    @Test
+    void shouldFailToAccessProtectedEndpointWithInvalidToken() throws Exception
+    {
+        mockMvc.perform(get("/api/v1/users")
+                .header("Authorization", "Bearer invalid.token.here"))
+                .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
+    void shouldRefreshTokenWithValidRefreshToken() throws Exception
+    {
+        // First register a user
+        RegisterRequest registerRequest = new RegisterRequest(
+            "testUser8", "test8@test.fr", "CorrectPassword12!", "CorrectPassword12!");
+        
+        MvcResult registerResult = mockMvc.perform(post("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(registerRequest)))
+            )
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String refreshToken = objectMapper.readTree(registerResult.getResponse().getContentAsString()).get("refreshToken").asText();
+
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest(refreshToken);
+        
+        // Now try to refresh the token with the valid refresh token
+        mockMvc.perform(post("/api/v1/auth/refresh")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(refreshTokenRequest)))
+            )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.refreshToken").exists())
+                .andExpect(jsonPath("$.username").value("testUser8"))
+                .andExpect(jsonPath("$.expiresAt").exists());
+    }
+
+
+    @Test
+    void shouldFailToRefreshTokenWithExpiredRefreshToken() throws Exception
+    {
+        // First register a user
+        RegisterRequest registerRequest = new RegisterRequest(
+            "testUser9", "test9@test.fr", "CorrectPassword12!", "CorrectPassword12!");
+
+        mockMvc.perform(post("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(registerRequest)))
+            )
+                .andExpect(status().isCreated());
+
+        // Login to get a refresh token
+        AuthRequest loginRequest = new AuthRequest("test9@test.fr", "CorrectPassword12!");
+        MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(loginRequest)))
+            )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String refreshToken = objectMapper.readTree(loginResult.getResponse().getContentAsString()).get("refreshToken").asText();
+
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest(refreshToken);
+        
+        // Simulate token expiration by waiting for longer than the token's lifespan
+        // The refresh token lifespan is set to 2 seconds, so we wait for 2 seconds to ensure it has expired
+        Thread.sleep(2000); 
+
+        // Now try to refresh the token with the expired refresh token
+        mockMvc.perform(post("/api/v1/auth/refresh")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(refreshTokenRequest)))
+            )
+                .andExpect(status().isUnauthorized());
+    }
+
+
 }
-
-
