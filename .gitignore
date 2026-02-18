@@ -7,6 +7,11 @@ target/
 *.log
 .DS_Store
 
+.env
+/backend/src/main/resources/application-dev.yml
+/backend/src/main/resources/application-prod.yml
+
+
 ### STS ###
 .apt_generated
 .classpath

@@ -1,0 +1,9 @@
+# .env - Docker Compose will auto-load this
+DB_URL=
+DB_USER=
+DB_PASS=
+JWT_SECRET=
+
+POSTGRES_DB=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
