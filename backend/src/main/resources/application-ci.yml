@@ -1,6 +1,6 @@
 spring:
     datasource:
-        url: jdbc:postgresql://localhost:5432/securetask
+        url: jdbc:postgresql://localhost:5432/securetask_ci
         username: postgres
         password: postgres
     flyway:
