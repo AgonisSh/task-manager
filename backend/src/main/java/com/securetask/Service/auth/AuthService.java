@@ -38,6 +38,7 @@ public class AuthService {
     private final UserFactory userFactory;
 
 
+    @Transactional
     public AuthResponse authenticate(AuthRequest authRequest) 
     {
         var token = new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword());
@@ -71,16 +72,17 @@ public class AuthService {
     }
 
 
+    @Transactional
     public AuthResponse refresh(RefreshTokenRequest request) 
     {
-        RefreshToken oldRefreshToken = refreshTokenService.findByToken(request.getToken())
+        RefreshToken oldRefreshToken = refreshTokenService.findByToken(request.getRefreshToken())
             .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
         
         refreshTokenService.verifyExpiration(oldRefreshToken);
         User user = oldRefreshToken.getUser();
 
         // Rotate refresh token: delete old and create new
-        refreshTokenService.deleteByToken(request.getToken());
+        refreshTokenService.deleteByToken(request.getRefreshToken());
         RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user.getEmail());
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
@@ -96,10 +98,10 @@ public class AuthService {
     }
 
 
-    @Transactional
+    
     public void logout(LogoutRequest request) 
     {
-        refreshTokenService.deleteByToken(request.getToken());
+        refreshTokenService.deleteByToken(request.getRefreshToken());
     }
 }
 

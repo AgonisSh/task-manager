@@ -15,6 +15,8 @@ import com.securetask.Exception.RefreshTokenExpiredException;
 import com.securetask.Repository.RefreshTokenRepository;
 import com.securetask.Repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class RefreshTokenService {
 
@@ -29,13 +31,17 @@ public class RefreshTokenService {
     private UserRepository userRepository;
     
 
+    @Transactional
     public RefreshToken createRefreshToken(String userEmail) 
     {
         User user = userRepository.findByEmail(userEmail)
             .orElseThrow(() -> new EntityNotFoundException("User not found"));
         
         // Delete existing token for user (one active refresh token policy)
-        refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
+        refreshTokenRepository.findByUser(user).ifPresent(token -> {
+            refreshTokenRepository.delete(token);
+            refreshTokenRepository.flush(); // Force immediate deletion
+        });
         
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
