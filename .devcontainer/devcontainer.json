@@ -4,10 +4,14 @@
     "service": "app",
     "workspaceFolder": "/app",
     "shutdownAction": "stopCompose",
-    "extensions": [
-        "vscjava.vscode-java-pack",
-        "vscjava.vscode-spring-boot-dashboard",
-        "vmware.vscode-boot-dev-pack"
-    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "vscjava.vscode-spring-boot-dashboard",
+                "vmware.vscode-boot-dev-pack"
+            ]
+        }
+    },
     "postCreateCommand": "mvn dependency:go-offline"
 }
