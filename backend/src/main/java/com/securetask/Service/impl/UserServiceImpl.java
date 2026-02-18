@@ -1,12 +1,10 @@
 package com.securetask.Service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
-import com.securetask.DAO.UserDAO;
-import com.securetask.Mapper.UserMapper;
 import com.securetask.Service.UserService;
-import com.securetask.Validator.UserValidator;
+
 
 @Service
 public class UserServiceImpl implements UserService {
