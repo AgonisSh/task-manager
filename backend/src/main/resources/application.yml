@@ -13,9 +13,9 @@ spring:
         name: secure-task-manager
 
     datasource:
-        url: jdbc:postgresql://localhost:5432/jwt_demo
-        username: admin
-        password: admin
+        url: jdbc:postgresql://localhost:5432/securetask
+        username: postgres
+        password: postgres
 
     jpa:
         hibernate:

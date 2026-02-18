@@ -16,6 +16,8 @@ import jakarta.transaction.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.Objects;
+
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
@@ -37,8 +39,8 @@ public class AuthControllerMockMvcTest {
         );
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
             )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").exists())
@@ -56,8 +58,8 @@ public class AuthControllerMockMvcTest {
         );
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
             )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("email: Invalid email format"));
@@ -72,8 +74,8 @@ public class AuthControllerMockMvcTest {
         );
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
             )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("password: Password must be between 8 and 64 characters"));
@@ -86,8 +88,8 @@ public class AuthControllerMockMvcTest {
                 "test", "test@test.fr", "WithoutSpecialCharacter123", "WithoutSpecialCharacter123");
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("password: Password must contain uppercase, lowercase, number, and special character"));
 
@@ -101,8 +103,8 @@ public class AuthControllerMockMvcTest {
                 "test", "test@test.fr", "CorrectPassword12!", "DifferentPassword12!");
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
             )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Passwords do not match"));
@@ -118,8 +120,8 @@ public class AuthControllerMockMvcTest {
         );
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(firstRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(firstRequest)))
             )
                 .andExpect(status().isCreated());
 
@@ -129,8 +131,8 @@ public class AuthControllerMockMvcTest {
         );
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(secondRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(secondRequest)))
             )
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Email already in use: test1@test.fr"));
@@ -146,8 +148,8 @@ public class AuthControllerMockMvcTest {
         );
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(firstRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(firstRequest)))
             )
                 .andExpect(status().isCreated());
 
@@ -157,8 +159,8 @@ public class AuthControllerMockMvcTest {
         );
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(secondRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(secondRequest)))
             )
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Username already in use: testUser"));
@@ -174,8 +176,8 @@ public class AuthControllerMockMvcTest {
         );
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(registerRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(registerRequest)))
             )
                 .andExpect(status().isCreated());
 
@@ -183,8 +185,8 @@ public class AuthControllerMockMvcTest {
         AuthRequest loginRequest = new AuthRequest("test5@test.fr", "CorrectPassword12!");
 
         mockMvc.perform(post("/api/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(loginRequest)))
             )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists())
@@ -203,8 +205,8 @@ public class AuthControllerMockMvcTest {
         );
 
         mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(registerRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(registerRequest)))
             )
                 .andExpect(status().isCreated());
 
@@ -212,8 +214,8 @@ public class AuthControllerMockMvcTest {
         AuthRequest loginRequest = new AuthRequest("test6@test.fr", "WrongPassword12!");
 
         mockMvc.perform(post("/api/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(loginRequest)))
             )
                 .andExpect(status().isUnauthorized());
     }
