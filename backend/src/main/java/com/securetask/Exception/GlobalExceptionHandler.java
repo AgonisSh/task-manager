@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -54,19 +55,31 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) 
+    {
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now().toString(),
+            HttpStatus.FORBIDDEN.value(),
+            "Forbidden",
+            "You do not have permission to access this resource",
+            request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ResponseEntity<ErrorResponse> handleOptimisticLock(OptimisticLockingFailureException ex, HttpServletRequest request) 
     {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-            new ErrorResponse(
-                LocalDateTime.now().toString(),
-                HttpStatus.CONFLICT.value(),
-                "Conflict",
-                "Task was modified by another user. Please refresh and try again.",
-                request.getRequestURI()
-            )
-    );
-}
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now().toString(),
+            HttpStatus.CONFLICT.value(),
+            "Conflict",
+            "The resource was modified by another transaction. Please refresh and try again.",
+            request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
     
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<ErrorResponse> handleDisabled(DisabledException ex, HttpServletRequest request) 
@@ -129,8 +142,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) 
+    @ExceptionHandler(RessourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(RessourceNotFoundException ex, HttpServletRequest request) 
     {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(),

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.securetask.Entitity.User;
 import com.securetask.Entitity.auth.RefreshToken;
-import com.securetask.Exception.EntityNotFoundException;
+import com.securetask.Exception.RessourceNotFoundException;
 import com.securetask.Exception.RefreshTokenExpiredException;
 import com.securetask.Repository.RefreshTokenRepository;
 import com.securetask.Repository.UserRepository;
@@ -35,7 +35,7 @@ public class RefreshTokenService {
     public RefreshToken createRefreshToken(String userEmail) 
     {
         User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+            .orElseThrow(() -> new RessourceNotFoundException("User not found"));
         
         // Delete existing token for user (one active refresh token policy)
         refreshTokenRepository.findByUser(user).ifPresent(token -> {
