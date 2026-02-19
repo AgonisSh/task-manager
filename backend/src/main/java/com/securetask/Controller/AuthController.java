@@ -10,6 +10,7 @@ import com.securetask.DTO.requests.RegisterRequest;
 import com.securetask.DTO.responses.AuthResponse;
 import com.securetask.Service.auth.AuthService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Authentication", description = "Register, login, refresh token")
 public class AuthController {
 
     private final AuthService authService;
