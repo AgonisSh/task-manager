@@ -1,6 +1,7 @@
 package com.securetask.DAO;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -19,15 +20,15 @@ public class TaskDAO {
         return taskRepository.findAll();
     }
 
-    public Task findById(@NonNull Long id) {
-        return taskRepository.findById(id).orElse(null);
+    public Optional<Task> findById(@NonNull Long id) {
+        return taskRepository.findById(id);
     }
 
-    public List<Task> findAllByAssigneeId(Long assigneeId) {
+    public List<Task> findAllByAssigneeId(@NonNull Long assigneeId) {
         return taskRepository.findAllByAssigneeId(assigneeId);
     }
 
-    public List<Task> findAllByCreatedById(Long createdById) {
+    public List<Task> findAllByCreatedById(@NonNull Long createdById) {
         return taskRepository.findAllByCreatedById(createdById);
     }
 
@@ -37,5 +38,9 @@ public class TaskDAO {
 
     public Task update(@NonNull Task task) {
         return taskRepository.save(task);
+    }
+
+    public void deleteById(@NonNull Long id) {
+        taskRepository.deleteById(id);
     }
 }
