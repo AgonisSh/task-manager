@@ -6,8 +6,10 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -41,7 +43,8 @@ public class GlobalExceptionHandler {
     }
     
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFound(UsernameNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UsernameNotFoundException ex, HttpServletRequest request) 
+    {
         ErrorResponse error = new ErrorResponse(
             LocalDateTime.now().toString(),
             HttpStatus.UNAUTHORIZED.value(),
@@ -51,9 +54,36 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) 
+    {
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now().toString(),
+            HttpStatus.FORBIDDEN.value(),
+            "Forbidden",
+            "You do not have permission to access this resource",
+            request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleOptimisticLock(OptimisticLockingFailureException ex, HttpServletRequest request) 
+    {
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now().toString(),
+            HttpStatus.CONFLICT.value(),
+            "Conflict",
+            "The resource was modified by another transaction. Please refresh and try again.",
+            request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
     
     @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<ErrorResponse> handleDisabled(DisabledException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleDisabled(DisabledException ex, HttpServletRequest request) 
+    {
         ErrorResponse error = new ErrorResponse(
             LocalDateTime.now().toString(),
             HttpStatus.FORBIDDEN.value(),
@@ -87,7 +117,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request) 
+    {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(),
                 HttpStatus.UNAUTHORIZED.value(),
@@ -111,8 +142,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) 
     {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(),
@@ -155,8 +186,8 @@ public class GlobalExceptionHandler {
 
     // Generic handler for any other exceptions
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
-        
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) 
+    {
         // SERVER SIDE: Log full details for debugging
         logger.error("Internal server error at {}: {}",
                 request.getRequestURI(), ex.getMessage(), ex);

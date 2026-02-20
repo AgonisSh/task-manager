@@ -9,6 +9,7 @@ services:
             # Mount source code for hot reload
             - ./backend/src:/app/src
             - ./backend/pom.xml:/app/pom.xml
+            - ./backend/target:/app/target # Mount target for hot reload (only for dev)
             # Cache Maven dependencies
             - maven-cache:/root/.m2
         environment:

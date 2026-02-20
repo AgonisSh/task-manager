@@ -38,7 +38,10 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
-    operationsSorter: method
+    operationsSorter: alpha 
+    tagsSorter: alpha        
+    display-request-duration: true  
+    filter: true              
 
 logging:
   level:
