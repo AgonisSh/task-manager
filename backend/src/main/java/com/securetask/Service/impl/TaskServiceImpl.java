@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.securetask.DAO.TaskDAO;
 import com.securetask.DAO.UserDAO;
@@ -14,12 +15,11 @@ import com.securetask.DTO.requests.UpdateTaskRequest;
 import com.securetask.DTO.responses.TaskResponse;
 import com.securetask.Entitity.Task;
 import com.securetask.Entitity.User;
-import com.securetask.Exception.RessourceNotFoundException;
+import com.securetask.Exception.ResourceNotFoundException;
 import com.securetask.Exception.BadRequestException;
 import com.securetask.Mapper.TaskMapper;
 import com.securetask.Service.TaskService;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -36,10 +36,11 @@ public class TaskServiceImpl implements TaskService {
     // ==========================================
 
     @Override
+    @Transactional(readOnly = true) // It lazy loads the assignee and creator, so we need a transaction
     public List<TaskResponse> getAllTasksAssignedToUser(@NonNull Long userId) 
     {
         if (!userDAO.existsById(userId)) {
-            throw new RessourceNotFoundException("User not found: " + userId);
+            throw new ResourceNotFoundException("User not found: " + userId);
         }   
         
         return taskDAO.findAllByAssigneeId(userId)
@@ -49,10 +50,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TaskResponse> getAllTasksCreatedByUser(@NonNull Long userId) 
     {
         if (!userDAO.existsById(userId)) {
-            throw new RessourceNotFoundException("User not found: " + userId);
+            throw new ResourceNotFoundException("User not found: " + userId);
         }
         
         return taskDAO.findAllByCreatedById(userId)
@@ -66,6 +68,7 @@ public class TaskServiceImpl implements TaskService {
     // ==========================================
 
     @Override
+    @Transactional(readOnly = true)
     public List<TaskResponse> getAllTasksAssignedToAuthUser() 
     {
         User currentUser = getCurrentUser();
@@ -76,6 +79,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TaskResponse> getAllTasksCreatedByAuthUser() 
     {
         User currentUser = getCurrentUser();
@@ -90,6 +94,7 @@ public class TaskServiceImpl implements TaskService {
     // ==========================================
 
     @Override
+    @Transactional(readOnly = true)
     public TaskResponse getTaskById(@NonNull Long taskId) 
     {
         Task task = findTaskByIdWithOwnershipCheck(taskId);
@@ -106,7 +111,7 @@ public class TaskServiceImpl implements TaskService {
         if (request.assigneeId() != null) {
 
             assignee = userDAO.findById(request.assigneeId())
-                    .orElseThrow(() -> new RessourceNotFoundException("Assignee not found: " + request.assigneeId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Assignee not found: " + request.assigneeId()));
         }
 
         Task task = Task.builder()
@@ -130,7 +135,7 @@ public class TaskServiceImpl implements TaskService {
 
         if (request.assigneeId() != null) {
             User newAssignee = userDAO.findById(request.assigneeId())
-                .orElseThrow(() -> new RessourceNotFoundException("Assignee not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
             task.setAssignee(newAssignee);
         }
 
@@ -174,13 +179,13 @@ public class TaskServiceImpl implements TaskService {
             .getName();
         
         return userDAO.findByEmail(email)
-            .orElseThrow(() -> new RessourceNotFoundException("Authenticated user not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
     }
 
     private Task findTaskByIdWithOwnershipCheck(@NonNull Long taskId) 
     {
         Task task = taskDAO.findById(taskId)
-            .orElseThrow(() -> new RessourceNotFoundException("Task not found: " + taskId));
+            .orElseThrow(() -> new ResourceNotFoundException("Task not found: " + taskId));
 
         User currentUser = getCurrentUser();
 
@@ -188,7 +193,7 @@ public class TaskServiceImpl implements TaskService {
         boolean isAdminOrManager = currentUser.getRole() == User.Role.ADMIN 
             || currentUser.getRole() == User.Role.MANAGER;
 
-        boolean isOwnerOrAssignee = task.getCreatedBy().getId().equals(currentUser.getId())
+        boolean isOwnerOrAssignee = task.getCreatedBy() != null && task.getCreatedBy().getId().equals(currentUser.getId())
             || (task.getAssignee() != null && task.getAssignee().getId().equals(currentUser.getId()));
 
         if (!isAdminOrManager && !isOwnerOrAssignee) {
