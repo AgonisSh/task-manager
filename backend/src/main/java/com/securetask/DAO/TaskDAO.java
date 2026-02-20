@@ -36,10 +36,6 @@ public class TaskDAO {
         return taskRepository.save(task);
     }
 
-    public Task update(@NonNull Task task) {
-        return taskRepository.save(task);
-    }
-
     public void deleteById(@NonNull Long id) {
         taskRepository.deleteById(id);
     }
