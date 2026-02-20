@@ -1,10 +1,10 @@
-CREATE TABLE TASKS (
+CREATE TABLE Tasks (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     status VARCHAR(50) NOT NULL,
     priority VARCHAR(50),
-    due_date DATE,
+    due_date TIMESTAMP,
     assignee_id BIGINT,
     created_by_user_id BIGINT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
