@@ -11,8 +11,6 @@ public record CreateTaskRequest(
     @Size(max = 5000, message = "Description must be at most 5000 characters")
     String description,
 
-
-    
     Long assigneeId
 ) {
     
