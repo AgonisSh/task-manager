@@ -17,18 +17,20 @@ public class JwtTokenService {
 
     @Value("${spring.application.name}")
     private String issuer;
+    
+    @Value("${jwt.expiration}")
+    private Long expiration;
 
     private final JwtEncoder encoder;
     private final JwtDecoder decoder;
 
     public String generateToken(Authentication authentication) 
     {
-        Instant now = Instant.now();
         String scope = "ROLE_USER";
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(this.issuer)
-                .issuedAt(now)
-                .expiresAt(now.plus(1, ChronoUnit.HOURS))
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plus(this.expiration, ChronoUnit.MILLIS))
                 .subject(authentication.getName())
                 .claim("scope", scope)
                 .build();

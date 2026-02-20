@@ -68,7 +68,7 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getEmail());
         Long expiresAt = jwtTokenService.extractExpirationTime(jwtToken);
 
-        return new AuthResponse(jwtToken, refreshToken.getToken(), user.getUsername(), expiresAt);
+        return new AuthResponse(jwtToken, refreshToken.getToken(), user.getEmail(), expiresAt);
     }
 
 
@@ -94,11 +94,11 @@ public class AuthService {
 
         Long expiresAt = jwtTokenService.extractExpirationTime(jwtToken);
 
-        return new AuthResponse(jwtToken, newRefreshToken.getToken(), user.getUsername(), expiresAt);
+        return new AuthResponse(jwtToken, newRefreshToken.getToken(), user.getEmail(), expiresAt);
     }
 
 
-    
+    @Transactional
     public void logout(LogoutRequest request) 
     {
         refreshTokenService.deleteByToken(request.getRefreshToken());
