@@ -142,8 +142,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
-    @ExceptionHandler(RessourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(RessourceNotFoundException ex, HttpServletRequest request) 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) 
     {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(),

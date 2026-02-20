@@ -67,7 +67,7 @@ public class Task {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();;
+        updatedAt = LocalDateTime.now();
     }
     
     @PreUpdate
