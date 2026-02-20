@@ -36,6 +36,7 @@ public class AuthControllerMockMvcTest {
     // HELPERS
     // ==========================================
 
+    @SuppressWarnings("null")
     private MvcResult register(String username, String email, String password, String confirmPassword) throws Exception 
     {
         RegisterRequest request = new RegisterRequest(username, email, password, confirmPassword);
@@ -59,6 +60,7 @@ public class AuthControllerMockMvcTest {
             .get("refreshToken").asText();
     }
 
+    @SuppressWarnings("null")
     private MvcResult login(String email, String password) throws Exception 
     {
         AuthRequest request = new AuthRequest(email, password);
