@@ -17,7 +17,7 @@ public class TaskMapper {
             .title(response.title())
             .description(response.description())
             .status(Task.StatusEnum.valueOf(response.status()))
-            .priority(Task.PriorityEnum.valueOf(response.priority()))
+            .priority(response.priority() != null ? Task.PriorityEnum.valueOf(response.priority()) : null)
             .dueDate(response.dueDate())
             // Assignee and CreatedBy would need to be set separately, as they are references to User entities
             .build();
@@ -45,7 +45,7 @@ public class TaskMapper {
             task.getPriority() != null ? task.getPriority().toString() : null,
             task.getDueDate(),
             task.getAssignee() != null ? task.getAssignee().getId() : null,
-            task.getCreatedBy().getId(),
+            task.getCreatedBy() != null ? task.getCreatedBy().getId() : null,
             task.getCreatedAt(),
             task.getUpdatedAt()
         );
