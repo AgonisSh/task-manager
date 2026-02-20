@@ -98,7 +98,7 @@ public class AuthService {
     }
 
 
-    
+    @Transactional
     public void logout(LogoutRequest request) 
     {
         refreshTokenService.deleteByToken(request.getRefreshToken());
