@@ -40,6 +40,12 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<List<TaskResponse>> getMyTasks() 
     {
+        return ResponseEntity.ok(taskService.getAllTasksCreatedByAuthUser());
+    }
+
+    @GetMapping("/assigned")
+     public ResponseEntity<List<TaskResponse>> getMyAssignedTasks() 
+    {
         return ResponseEntity.ok(taskService.getAllTasksAssignedToAuthUser());
     }
 
